@@ -8,6 +8,7 @@ exports.handler = function(context, event, callback) {
         accountSid: TWILIO_ACCOUNT_SID,
       });
     const roomSid = "RMdd8f0e6a4ee733e068a7ded1dbcd3c62";
+    //will start with a blank slate and code each of these parts live (may look at docs occasionally and have the code to the side)
 
     //part 1: get recordings (can show in Twilio console where to enable recording)
     // client.video
@@ -36,9 +37,10 @@ exports.handler = function(context, event, callback) {
     //     });
     // });
 
-    //part 3: get non-enqueued one to make a request. takes time for them to be processed so we can access the video media
+    //part 3: get non-enqueued composition to make a request. takes time for compositions to be processed so we can access the video media
    const request = require('request');
    const uri = "https://video.twilio.com/v1/Compositions/CJffa0d341ff9b40f6139a1fe6c40e891e/Media?Ttl=3600";
+   //The URL returned will be available by default for 600 seconds, but this can be configured to a value between 1 and 3600 seconds via the Ttl request param.
    client
    .request({
         method: "GET",
@@ -53,5 +55,5 @@ exports.handler = function(context, event, callback) {
         console.log("Error fetching /Media resource " + error);
     }); 
     
-    //part 4: display mp4 in htm in recording.html?
+    //part 4: display mp4 in html in recording.html?
 };
