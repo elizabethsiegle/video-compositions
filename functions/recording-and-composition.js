@@ -14,46 +14,44 @@ exports.handler = function(context, event, callback) {
     // .rooms(roomSid)
     // .recordings.list({ limit: 5 })
     // .then(recordings => {
-    //   callback(null, {composition: recordings});
+    //   callback(null, {composition: recordings}); //object is received in index.js and parsed 
 
     //part 2: make a composition
-    let audioSid, videoSid;
-    client.video
-    .rooms(roomSid)
-    .recordings.list({ limit: 5 })
-    .then(recordings => {
-        videoSid = recordings.find(el => el.type === 'video').sid; //first element of type video
-        audioSid = recordings.find(el => el.type === 'audio').sid; //first element of type audio
-        client.video.compositions.create({
-            roomSid: roomSid,
-            audioSources: [audioSid],
-            videoLayout: { grid: { video_sources: [videoSid] } },
-            //resolution: resolution,
-            format: 'mp4'
-        })
-        .then(composition => {
-            callback(null, {composition: composition});
-        });
-    });
-
-    //part 3: get non-enqueued one to make a request
-    
-            // const uri = "https://video.twilio.com/v1/Compositions/CJ39ea433e5c3da16445750eccf447a3ee/Media?Ttl=3600";
-            // client
-            // .request({
-            //     method: "GET",
-            //     uri: uri,
-            // })
-            // .catch((error) => {
-            //     console.log("Error fetching /Media resource " + error);
-            // });   
-            
-   // });
-    // const uri = "https://video.twilio.com/v1/Compositions/CJ39ea433e5c3da16445750eccf447a3ee/Media?Ttl=3600";
-    //   client.request({ method: "GET", uri: uri }).then(response => {
-    //     const mediaLocation = response.data.redirect_to;
-    //     request.get(mediaLocation, (err, res, media) => {
-    //       callback(null, {composition: mediaLocation});
+    // let audioSid, videoSid;
+    // client.video
+    // .rooms(roomSid)
+    // .recordings.list({ limit: 5 })
+    // .then(recordings => {
+    //     videoSid = recordings.find(el => el.type === 'video').sid; //first element of type video
+    //     audioSid = recordings.find(el => el.type === 'audio').sid; //first element of type audio
+    //     client.video.compositions.create({
+    //         roomSid: roomSid,
+    //         audioSources: [audioSid],
+    //         videoLayout: { grid: { video_sources: [videoSid] } },
+    //         //resolution: resolution,
+    //         format: 'mp4'
+    //     })
+    //     .then(composition => {
+    //         callback(null, {composition: composition});
     //     });
-    //   });
+    // });
+
+    //part 3: get non-enqueued one to make a request. takes time for them to be processed so we can access the video media
+   const request = require('request');
+   const uri = "https://video.twilio.com/v1/Compositions/CJffa0d341ff9b40f6139a1fe6c40e891e/Media?Ttl=3600";
+   client
+   .request({
+        method: "GET",
+        uri: uri,
+    })
+    .then(response => {
+        const mediaLocation = JSON.parse(response.body).redirect_to;
+        console.log('You can fetch the media file in this URL:');
+        callback(null, {composition: mediaLocation});
+    })
+    .catch((error) => {
+        console.log("Error fetching /Media resource " + error);
+    }); 
+    
+    //part 4: display mp4 in htm in recording.html?
 };
